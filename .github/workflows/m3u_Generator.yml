@@ -1,43 +1,38 @@
 name: M3U Generator
 
 permissions:
-contents: write
+  contents: write
 
 on:
-schedule:
-- cron: '0 */6 * * *'   # Every 6 hours
-
-push:
-branches:
-- RenjithVR4-patch-1
-
-workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'   # Every 6 hours
+  push:
+    branches:
+      - RenjithVR4-patch-1
+  workflow_dispatch:
 
 jobs:
-build:
-runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-```
-steps:
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
 
-  - name: Configure Git
-    run: |
-      git config --global user.email "action@github.com"
-      git config --global user.name "GitHub Action"
+      - name: Run Generator
+        run: |
+          chmod +x autorun.sh
+          ./autorun.sh
 
-  - name: Run Generator
-    run: |
-      chmod +x autorun.sh
-      ./autorun.sh
+      - name: Commit Changes
+        run: |
+          git add -A
+          git diff --cached --quiet || git commit -m "Auto-update M3U links"
 
-  - name: Commit Changes
-    run: |
-      git add -A
-      git diff --cached --quiet || git commit -m "Auto-update M3U links"
-
-  - name: Push Changes
-    run: |
-      git push
-```
+      - name: Push Changes
+        run: |
+          git push
